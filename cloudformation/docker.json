@@ -1,0 +1,416 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Resources": {
+    "vpc04e27861": {
+      "Type": "AWS::EC2::VPC",
+      "Properties": {
+        "CidrBlock": "10.0.0.0/16",
+        "InstanceTenancy": "default",
+        "EnableDnsSupport": "true",
+        "EnableDnsHostnames": "true",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "ecs_vpc"
+          }
+        ]
+      }
+    },
+    "subnet95fe3cbe": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.1.0/24",
+        "AvailabilityZone": "us-east-1b",
+        "VpcId": {
+          "Ref": "vpc04e27861"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "subnet_b"
+          }
+        ]
+      }
+    },
+    "subnet456e017f": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.0.0/24",
+        "AvailabilityZone": "us-east-1e",
+        "VpcId": {
+          "Ref": "vpc04e27861"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "subnet_e"
+          }
+        ]
+      }
+    },
+    "igwdec471bb": {
+      "Type": "AWS::EC2::InternetGateway",
+      "Properties": {
+      }
+    },
+    "doptdfa1b5bd": {
+      "Type": "AWS::EC2::DHCPOptions",
+      "Properties": {
+        "DomainName": "ec2.internal",
+        "DomainNameServers": [
+          "AmazonProvidedDNS"
+        ]
+      }
+    },
+    "acl20fb6345": {
+      "Type": "AWS::EC2::NetworkAcl",
+      "Properties": {
+        "VpcId": {
+          "Ref": "vpc04e27861"
+        }
+      }
+    },
+    "rtbec701e89": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "vpc04e27861"
+        }
+      }
+    },
+    "elbdockerregistrylb": {
+      "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+      "Properties": {
+        "Subnets": [
+          {
+            "Ref": "subnet456e017f"
+          },
+          {
+            "Ref": "subnet95fe3cbe"
+          }
+        ],
+        "HealthCheck": {
+          "HealthyThreshold": "10",
+          "Interval": "30",
+          "Target": "HTTP:5000/index.html",
+          "Timeout": "5",
+          "UnhealthyThreshold": "2"
+        },
+        "Instances": [
+          {
+            "Ref": "instancei2aa0cbd4"
+          },
+          {
+            "Ref": "instancei5377197c"
+          }
+        ],
+        "SecurityGroups": [
+          {
+            "Ref": "sglaunchwizard1"
+          }
+        ],
+        "Listeners": [
+          {
+            "InstancePort": "5000",
+            "LoadBalancerPort": "80",
+            "Protocol": "HTTP",
+            "InstanceProtocol": "HTTP"
+          }
+        ]
+      }
+    },
+    "asgdockerregistrysg": {
+      "Type": "AWS::AutoScaling::AutoScalingGroup",
+      "Properties": {
+        "AvailabilityZones": [
+          "us-east-1b",
+          "us-east-1e"
+        ],
+        "Cooldown": "300",
+        "DesiredCapacity": "2",
+        "MaxSize": "4",
+        "MinSize": "2",
+        "HealthCheckGracePeriod": "300",
+        "HealthCheckType": "EC2",
+        "VPCZoneIdentifier": [
+          "subnet-95fe3cbe",
+          "subnet-456e017f"
+        ],
+        "LaunchConfigurationName": {
+          "Ref": "lcdockerregistrylc"
+        }
+      }
+    },
+    "instancei2aa0cbd4": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "DisableApiTermination": "FALSE",
+        "IamInstanceProfile": "arn:aws:iam::080285282349:instance-profile/ecs_role",
+        "ImageId": "ami-b66ed3de",
+        "InstanceType": "t2.medium",
+        "KeyName": "ecs-key-pair-useast1",
+        "Monitoring": "false",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "docker-registry"
+          }
+        ],
+        "NetworkInterfaces": [
+          {
+            "DeleteOnTermination": "true",
+            "Description": "Primary network interface",
+            "DeviceIndex": 0,
+            "SubnetId": {
+              "Ref": "subnet95fe3cbe"
+            },
+            "PrivateIpAddresses": [
+              {
+                "PrivateIpAddress": "10.0.1.100",
+                "Primary": "true"
+              }
+            ],
+            "GroupSet": [
+              {
+                "Ref": "sglaunchwizard1"
+              }
+            ],
+            "AssociatePublicIpAddress": "true"
+          }
+        ]
+      }
+    },
+    "instancei5377197c": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "DisableApiTermination": "FALSE",
+        "IamInstanceProfile": "arn:aws:iam::080285282349:instance-profile/ecs_role",
+        "ImageId": "ami-b66ed3de",
+        "InstanceType": "t2.medium",
+        "KeyName": "ecs-key-pair-useast1",
+        "Monitoring": "false",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "docker-registry"
+          }
+        ],
+        "NetworkInterfaces": [
+          {
+            "DeleteOnTermination": "true",
+            "Description": "Primary network interface",
+            "DeviceIndex": 0,
+            "SubnetId": {
+              "Ref": "subnet456e017f"
+            },
+            "PrivateIpAddresses": [
+              {
+                "PrivateIpAddress": "10.0.0.132",
+                "Primary": "true"
+              }
+            ],
+            "GroupSet": [
+              {
+                "Ref": "sglaunchwizard1"
+              }
+            ],
+            "AssociatePublicIpAddress": "true"
+          }
+        ]
+      }
+    },
+    "s3zxsw": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+      }
+    },
+    "lcdockerregistrylc": {
+      "Type": "AWS::AutoScaling::LaunchConfiguration",
+      "Properties": {
+        "ImageId": "ami-b66ed3de",
+        "InstanceType": "t2.medium",
+        "KeyName": "ecs-key-pair-useast1",
+        "IamInstanceProfile": "ecs_role",
+        "SecurityGroups": [
+          "sg-3d9e6f50"
+        ],
+        "BlockDeviceMappings": [
+          {
+            "DeviceName": "/dev/xvda",
+            "Ebs": {
+              "VolumeSize": 8
+            }
+          }
+        ]
+      }
+    },
+    "sglaunchwizard1": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "launch-wizard-1 created 2014-12-22T23:15:37.321+01:00",
+        "VpcId": {
+          "Ref": "vpc04e27861"
+        },
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "5000",
+            "ToPort": "5000",
+            "CidrIp": "0.0.0.0/0"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "22",
+            "ToPort": "22",
+            "CidrIp": "0.0.0.0/0"
+          }
+        ],
+        "SecurityGroupEgress": [
+          {
+            "IpProtocol": "-1",
+            "CidrIp": "0.0.0.0/0"
+          }
+        ]
+      }
+    },
+    "acl1": {
+      "Type": "AWS::EC2::NetworkAclEntry",
+      "Properties": {
+        "CidrBlock": "0.0.0.0/0",
+        "Egress": true,
+        "Protocol": "-1",
+        "RuleAction": "allow",
+        "RuleNumber": "100",
+        "NetworkAclId": {
+          "Ref": "acl20fb6345"
+        }
+      }
+    },
+    "acl2": {
+      "Type": "AWS::EC2::NetworkAclEntry",
+      "Properties": {
+        "CidrBlock": "0.0.0.0/0",
+        "Protocol": "-1",
+        "RuleAction": "allow",
+        "RuleNumber": "100",
+        "NetworkAclId": {
+          "Ref": "acl20fb6345"
+        }
+      }
+    },
+    "subnetacl1": {
+      "Type": "AWS::EC2::SubnetNetworkAclAssociation",
+      "Properties": {
+        "NetworkAclId": {
+          "Ref": "acl20fb6345"
+        },
+        "SubnetId": {
+          "Ref": "subnet456e017f"
+        }
+      }
+    },
+    "subnetacl2": {
+      "Type": "AWS::EC2::SubnetNetworkAclAssociation",
+      "Properties": {
+        "NetworkAclId": {
+          "Ref": "acl20fb6345"
+        },
+        "SubnetId": {
+          "Ref": "subnet95fe3cbe"
+        }
+      }
+    },
+    "gw1": {
+      "Type": "AWS::EC2::VPCGatewayAttachment",
+      "Properties": {
+        "VpcId": {
+          "Ref": "vpc04e27861"
+        },
+        "InternetGatewayId": {
+          "Ref": "igwdec471bb"
+        }
+      }
+    },
+    "subnetroute1": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "rtbec701e89"
+        },
+        "SubnetId": {
+          "Ref": "subnet95fe3cbe"
+        }
+      }
+    },
+    "subnetroute2": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "rtbec701e89"
+        },
+        "SubnetId": {
+          "Ref": "subnet456e017f"
+        }
+      }
+    },
+    "route1": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "RouteTableId": {
+          "Ref": "rtbec701e89"
+        },
+        "GatewayId": {
+          "Ref": "igwdec471bb"
+        }
+      },
+      "DependsOn": "gw1"
+    },
+    "dchpassoc1": {
+      "Type": "AWS::EC2::VPCDHCPOptionsAssociation",
+      "Properties": {
+        "VpcId": {
+          "Ref": "vpc04e27861"
+        },
+        "DhcpOptionsId": {
+          "Ref": "doptdfa1b5bd"
+        }
+      }
+    },
+    "ingress1": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "GroupId": {
+          "Ref": "sglaunchwizard1"
+        },
+        "IpProtocol": "tcp",
+        "FromPort": "5000",
+        "ToPort": "5000",
+        "CidrIp": "0.0.0.0/0"
+      }
+    },
+    "ingress2": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "GroupId": {
+          "Ref": "sglaunchwizard1"
+        },
+        "IpProtocol": "tcp",
+        "FromPort": "22",
+        "ToPort": "22",
+        "CidrIp": "0.0.0.0/0"
+      }
+    },
+    "egress1": {
+      "Type": "AWS::EC2::SecurityGroupEgress",
+      "Properties": {
+        "GroupId": {
+          "Ref": "sglaunchwizard1"
+        },
+        "IpProtocol": "-1",
+        "CidrIP": "0.0.0.0/0"
+      }
+    }
+  },
+  "Description": "CloudFormation script to create a Docker registry"
+}
