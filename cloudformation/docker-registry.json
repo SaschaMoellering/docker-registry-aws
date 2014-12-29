@@ -1,6 +1,6 @@
 {  
    "AWSTemplateFormatVersion":"2010-09-09",
-   "Description":"Creates a load balanced Docke registry",
+   "Description":"Creates a load balanced Docker registry",
    "Parameters":{  
       "InstanceType":{  
          "Description":"WebServer EC2 instance type",
@@ -80,6 +80,11 @@
          "Type":"CommaDelimitedList",
          "Default":"us-east-1b,us-east-1e",
          "Description":"The list of AvailabilityZones for your Virtual Private Cloud (VPC). It needs to be consistent with the AZ of your subnets."
+      },
+      "SGId":{
+         "Type":"String",
+         "Description":"Security Group ID of your exististing VPC",
+         "Default":"sg-6b14ed0f"
       }
    },
    "Mappings":{  
@@ -293,7 +298,7 @@
          },
          "CreationPolicy":{  
             "ResourceSignal":{  
-               "Timeout":"PT15M",
+               "Timeout":"PT30M",
                "Count":"1"
             }
          },
@@ -301,7 +306,7 @@
             "AutoScalingRollingUpdate":{  
                "MinInstancesInService":"1",
                "MaxBatchSize":"1",
-               "PauseTime":"PT15M",
+               "PauseTime":"PT30M",
                "WaitOnResourceSignals":"true"
             }
          }
@@ -316,20 +321,6 @@
 
                   },
                   "files":{  
-                     "/var/www/html/index.html":{  
-                        "content":{  
-                           "Fn::Join":[  
-                              "\n",
-                              [  
-                                 "<img src=\"https://s3.amazonaws.com/cloudformation-examples/cloudformation_graphic.png\" alt=\"AWS CloudFormation Logo\"/>",
-                                 "<h1>Congratulations, you have successfully launched the AWS CloudFormation sample.</h1>"
-                              ]
-                           ]
-                        },
-                        "mode":"000644",
-                        "owner":"root",
-                        "group":"root"
-                     },
                      "/etc/cfn/cfn-hup.conf":{  
                         "content":{  
                            "Fn::Join":[  
@@ -586,17 +577,9 @@
                   "IpProtocol":"tcp",
                   "FromPort":"80",
                   "ToPort":"80",
-                  "SourceSecurityGroupOwnerId":{  
-                     "Fn::GetAtt":[  
-                        "ElasticLoadBalancer",
-                        "SourceSecurityGroup.OwnerAlias"
-                     ]
-                  },
-                  "SourceSecurityGroupName":{  
-                     "Fn::GetAtt":[  
-                        "ElasticLoadBalancer",
-                        "SourceSecurityGroup.GroupName"
-                     ]
+                  
+                  "SourceSecurityGroupId":{  
+                     "Ref":"SGId"
                   }
                }
             ]
