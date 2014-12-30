@@ -295,20 +295,6 @@
                   "autoscaling:EC2_INSTANCE_TERMINATE_ERROR"
                ]
             }
-         },
-         "CreationPolicy":{  
-            "ResourceSignal":{  
-               "Timeout":"PT30M",
-               "Count":"1"
-            }
-         },
-         "UpdatePolicy":{  
-            "AutoScalingRollingUpdate":{  
-               "MinInstancesInService":"1",
-               "MaxBatchSize":"1",
-               "PauseTime":"PT30M",
-               "WaitOnResourceSignals":"true"
-            }
          }
       },
       "LaunchConfig":{  
