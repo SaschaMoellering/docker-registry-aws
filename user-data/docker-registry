@@ -2,6 +2,7 @@
 yum update -y
 yum install docker -y
 yum install git -y
+export AWS_BUCKET=@S3Bucket@
 cd /tmp && git clone https://github.com/SaschaMoellering/docker-registry-aws.git
 mkdir -p /etc/docker/
 cp docker-registry-aws/config/config.yml /etc/docker/
