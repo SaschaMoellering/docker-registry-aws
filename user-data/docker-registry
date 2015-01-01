@@ -1,0 +1,13 @@
+#!/bin/bash -xe
+yum update -y
+yum install docker -y
+yum install git -y
+cd /tmp && git clone https://github.com/SaschaMoellering/docker-registry-aws.git
+mkdir -p /etc/docker/
+cp docker-registry-aws/config/config.yml /etc/docker/
+LOCAL_IP=`ifconfig | sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p'`
+sed -e "s/@IP@/$LOCAL_IP/g" docker-registry-aws/config/docker.template > /etc/sysconfig/docker
+cp docker-registry-aws/service/docker-registry /etc/init.d
+chmod a+x /etc/init.d/docker-registry
+chkconfig --add docker-registry
+service docker-registry start
