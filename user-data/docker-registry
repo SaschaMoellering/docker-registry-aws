@@ -10,4 +10,5 @@ sed -e "s/@IP@/$LOCAL_IP/g" docker-registry-aws/config/docker.template > /etc/sy
 cp docker-registry-aws/service/docker-registry /etc/init.d
 chmod a+x /etc/init.d/docker-registry
 chkconfig --add docker-registry
+service docker start
 service docker-registry start
