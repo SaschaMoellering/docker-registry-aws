@@ -204,11 +204,11 @@
             "Arch":"HVM64"
          }
       },
-      "AWSRegionArch2AMI":{  
+      "AWSRegionArch2AMI":{   
          "us-east-1":{  
-            "PV64":"ami-50842d38",
-            "HVM64":"ami-08842d60",
-            "HVMG2":"ami-3a329952"
+            "PV64":"ami-246ed34c",
+            "HVM64":"ami-b66ed3de",
+            "HVMG2":"ami-184dc970"
          },
          "us-west-2":{  
             "PV64":"ami-af86c69f",
@@ -574,7 +574,7 @@
                {  
                   "IpProtocol":"tcp",
                   "FromPort":"80",
-                  "ToPort":"80",
+                  "ToPort":"5000",
                   
                   "SourceSecurityGroupId":{  
                      "Ref":"SGId"
