@@ -84,12 +84,13 @@
       "SGId":{
          "Type":"String",
          "Description":"Security Group ID of your exististing VPC",
-         "Default":"sg-6b14ed0f"
+         "Default":"sg-9e488efa"
       },
       "S3Bucket":{
-         "Type":"AWS::S3::Bucket::BucketName",
+         "Type":"String",
          "Description":"The S3 bucket to store the Docker images",
-         "ConstraintDescription":"must be the name of an existing S3 Bucket."
+         "ConstraintDescription":"must be the name of an existing S3 Bucket.",
+         "Default":"docker-images"
       }
    },
    "Mappings":{  
