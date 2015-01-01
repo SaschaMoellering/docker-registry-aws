@@ -11,7 +11,7 @@ DOCKER_REGISTRY_PIDFILE=/var/run/$BASE.pid
 
 fail_unless_root() {
   if [ "$(id -u)" != '0' ]; then
-    log_failure_msg "docker-registry must be run as root"
+    echo "docker-registry must be run as root"
     exit 1
   fi
 }
