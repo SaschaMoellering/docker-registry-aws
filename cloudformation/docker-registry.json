@@ -542,12 +542,12 @@
             "Listeners":[  
                {  
                   "LoadBalancerPort":"80",
-                  "InstancePort":"5000",
+                  "InstancePort":"80",
                   "Protocol":"HTTP"
                }
             ],
             "HealthCheck":{  
-               "Target":"HTTP:5000/",
+               "Target":"HTTP:80/",
                "HealthyThreshold":"3",
                "UnhealthyThreshold":"5",
                "Interval":"30",
@@ -567,18 +567,13 @@
                   "IpProtocol":"tcp",
                   "FromPort":"22",
                   "ToPort":"22",
-                  "CidrIp":{  
-                     "Ref":"SSHLocation"
-                  }
+                  "CidrIp":"0.0.0.0/0"
                },
                {  
                   "IpProtocol":"tcp",
                   "FromPort":"80",
-                  "ToPort":"5000",
-                  
-                  "SourceSecurityGroupId":{  
-                     "Ref":"SGId"
-                  }
+                  "ToPort":"80",
+                  "CidrIp":"0.0.0.0/0"
                }
             ]
          }
