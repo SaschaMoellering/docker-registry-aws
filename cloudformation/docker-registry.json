@@ -409,6 +409,7 @@
             "InstanceType":{  
                "Ref":"InstanceType"
             },
+            "AssociatePublicIpAddress":"true",
             "UserData":{  
                "Fn::Base64":{  
                   "Fn::Join":[  
@@ -535,8 +536,8 @@
       "ElasticLoadBalancer":{  
          "Type":"AWS::ElasticLoadBalancing::LoadBalancer",
          "Properties":{  
-            "AvailabilityZones":{  
-               "Fn::GetAZs":""
+            "Subnets": {
+               "Ref":"Subnets"
             },
             "CrossZone":"true",
             "Listeners":[  
