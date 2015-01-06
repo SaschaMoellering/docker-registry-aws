@@ -4,4 +4,4 @@
 DOCKER="/usr/bin/docker"
 
 # Use DOCKER_OPTS to modify the daemon startup options.
-DOCKER_OPTS=' --host=unix:///var/run/docker.sock --host=tcp://0.0.0.0:2375 --restart=true --insecure-registry @IP@:5000'
+DOCKER_OPTS=' --host=unix:///var/run/docker.sock --host=tcp://0.0.0.0:2375 --restart=true --insecure-registry @IP@:80'
