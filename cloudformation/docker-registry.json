@@ -539,6 +539,11 @@
                "Fn::GetAZs":""
             },
             "CrossZone":"true",
+            "SecurityGroups":[ 
+               {
+                  "Ref":"SGId"
+               }
+            ],
             "Listeners":[  
                {  
                   "LoadBalancerPort":"80",
