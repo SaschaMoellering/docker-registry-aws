@@ -19,7 +19,7 @@ fail_unless_root() {
 case "$1" in
   start)
     fail_unless_root
-    docker run -p 5000:5000 -v /etc/docker:/registry-conf -e DOCKER_REGISTRY_CONFIG=/registry-conf/config.yml registry &
+    docker run -p 80:5000 -v /etc/docker:/registry-conf -e DOCKER_REGISTRY_CONFIG=/registry-conf/config.yml registry &
     echo $! > $DOCKER_REGISTRY_PIDFILE
     ;;
 
